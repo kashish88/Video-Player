@@ -1,3 +1,19 @@
+Project Structure:
+App.js: The main component where the VideoPlayer and Playlist components are rendered.
+components/VideoPlayer.js: Contains the VideoPlayer component responsible for playing videos with controls like play/pause, volume control, playback rate, fullscreen mode, etc.
+components/Playlist.js: Contains the Playlist component responsible for displaying a list of videos, allowing searching, and reordering.
+media.js: Contains JSON data with video information.
+styled-components: Styled components are used for styling throughout the application.
+
+Additional Notes:
+The application uses React hooks extensively for state management.
+Styled-components library is used for styling, allowing CSS to be written directly within JavaScript components.
+The VideoPlayer component utilizes the ReactPlayer library for video playback.
+Drag and drop functionality is implemented in the Playlist component for reordering videos.
+The playlist can be searched through with a search input.
+Autoplay functionality is included in the VideoPlayer component, which plays the video automatically.
+The application is responsive, with different layouts for smaller and larger screens.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

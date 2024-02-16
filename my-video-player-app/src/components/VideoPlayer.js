@@ -14,17 +14,28 @@ const Container = styled.div`
   }
 `;
 
-
 const PlayerContainer = styled.div`
   flex: 1;
-  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+
+  @media (min-width: 768px) {
+    margin-top: 1em;
+  }
 `;
 
 const ControlBar = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-top: 0.5rem;
+  gap: 1rem; /* Add some vertical spacing between controls */
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
 `;
 
 const PlayButton = styled.button`
@@ -46,8 +57,16 @@ const TimeLabel = styled.span`
 `;
 
 const PlaybackRateSelect = styled.select`
-  margin-left: 0.5rem;
   padding: 0.5rem;
+`;
+
+const VolumeControlContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const VolumeLabel = styled.span`
+  margin-right: 0.5rem;
 `;
 
 const VolumeControl = styled.input`
@@ -68,20 +87,62 @@ const FullscreenButton = styled.button`
   }
 `;
 
-const VideoPlayer = ({ video }) => {
-  const [playing, setPlaying] = useState(true);
+const EnableSoundButton = styled.button`
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: #218838;
+  }
+`;
+const VideoPlayer = ({ video,autoplay }) => {
+  const [playing, setPlaying] = useState(false); 
   const [playedSeconds, setPlayedSeconds] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [seeking, setSeeking] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [fullscreen, setFullscreen] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
 
   const playerRef = useRef(null);
   const playerContainerRef = useRef(null);
 
-  
-  
+    useEffect(() => {
+    if (autoplay) {
+      setPlaying(true);
+    }
+  }, [autoplay]);
+
+  useEffect(() => {
+    const handleFullScreenChange = () => {
+      setFullscreen(
+        !!(
+          document.fullscreenElement ||
+          document.webkitFullscreenElement ||
+          document.mozFullScreenElement ||
+          document.msFullscreenElement
+        )
+      );
+    };
+
+    document.addEventListener('fullscreenchange', handleFullScreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullScreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullScreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullScreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullScreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullScreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullScreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullScreenChange);
+    };
+  }, []);
 
   const handlePlayPause = () => {
     setPlaying(!playing);
@@ -113,13 +174,26 @@ const VideoPlayer = ({ video }) => {
 
   const handleFullscreen = () => {
     if (!fullscreen) {
-      if (playerContainerRef.current) {
+      if (playerContainerRef.current.requestFullscreen) {
         playerContainerRef.current.requestFullscreen();
+      } else if (playerContainerRef.current.mozRequestFullScreen) {
+        playerContainerRef.current.mozRequestFullScreen();
+      } else if (playerContainerRef.current.webkitRequestFullscreen) {
+        playerContainerRef.current.webkitRequestFullscreen();
+      } else if (playerContainerRef.current.msRequestFullscreen) {
+        playerContainerRef.current.msRequestFullscreen();
       }
     } else {
-      document.exitFullscreen();
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch((err) => console.error('Exit fullscreen error:', err));
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
     }
-    setFullscreen(!fullscreen);
   };
 
   const formatTime = (seconds) => {
@@ -127,6 +201,8 @@ const VideoPlayer = ({ video }) => {
     const remainingSeconds = Math.floor(seconds % 60);
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
+
+  const volumePercentage = Math.round(volume * 100);
 
   return (
     <PlayerContainer ref={playerContainerRef}>
@@ -139,25 +215,31 @@ const VideoPlayer = ({ video }) => {
         onProgress={handleProgress}
         onEnded={() => console.log('Video ended')}
         onDuration={(duration) => setDuration(duration)}
-        onReady={() => setPlaying(true)}
         width="100%"
-          height="100%"
+        height="100%"
+        muted={!soundEnabled}
       />
       <ControlBar>
-        <PlayButton onClick={handlePlayPause}>
-          {playing ? 'Pause' : 'Play'}
-        </PlayButton>
-        <VolumeControl
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          value={volume}
-          onChange={handleVolumeChange}
-        />
-         <FullscreenButton onClick={handleFullscreen}>
-          {fullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-        </FullscreenButton>
+        <PlayButton onClick={handlePlayPause}>{playing ? 'Pause' : 'Play'}</PlayButton>
+        <VolumeControlContainer>
+          <VolumeLabel>{volumePercentage}%</VolumeLabel>
+          <VolumeControl
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={volume}
+            onChange={handleVolumeChange}
+          />
+        </VolumeControlContainer>
+        {fullscreen ? (
+          <FullscreenButton onClick={handleFullscreen}>Exit Fullscreen</FullscreenButton>
+        ) : (
+          <FullscreenButton onClick={handleFullscreen}>Fullscreen</FullscreenButton>
+        )}
+       {soundEnabled || (
+          <EnableSoundButton onClick={() => setSoundEnabled(true)}>Enable Sound</EnableSoundButton>
+        )}
         <div>
           <TimeLabel>{formatTime(playedSeconds)}</TimeLabel>
           <input
@@ -184,4 +266,5 @@ const VideoPlayer = ({ video }) => {
     </PlayerContainer>
   );
 };
+
 export default VideoPlayer;

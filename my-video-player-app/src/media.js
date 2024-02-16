@@ -7,12 +7,6 @@ const mediaJSON = {
               "thumb" : "https://storage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
               "title" : "Big Buck Bunny"
             },
-            { "description" : "The first Blender Open Movie from 2006",
-              "sources" : [ "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" ],
-              "subtitle" : "By Blender Foundation",
-              "thumb" : "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
-              "title" : "Elephant Dream"
-            },
             { "description" : "HBO GO now works with Chromecast -- the easiest way to enjoy online video on your TV. For when you want to settle into your Iron Throne to watch the latest episodes. For $35.\nLearn how to use Chromecast with HBO GO and more at google.com/chromecast.",
               "sources" : [ "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" ],
               "subtitle" : "By Google",
@@ -43,6 +37,12 @@ const mediaJSON = {
               "thumb" : "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerMeltdowns.jpg",
               "title" : "For Bigger Meltdowns"
             },
+            { "description" : "The first Blender Open Movie from 2006",
+            "sources" : [ "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" ],
+            "subtitle" : "By Blender Foundation",
+            "thumb" : "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
+            "title" : "Elephant Dream"
+          },
 			{ "description" : "Sintel is an independently produced short film, initiated by the Blender Foundation as a means to further improve and validate the free/open source 3D creation suite Blender. With initial funding provided by 1000s of donations via the internet community, it has again proven to be a viable development model for both open 3D technology as for independent animation film.\nThis 15 minute film has been realized in the studio of the Amsterdam Blender Institute, by an international team of artists and developers. In addition to that, several crucial technical and creative targets have been realized online, by developers and artists and teams all over the world.\nwww.sintel.org",
               "sources" : [ "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4" ],
               "subtitle" : "By Blender Foundation",

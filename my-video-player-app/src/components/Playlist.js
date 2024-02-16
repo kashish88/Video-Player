@@ -4,6 +4,19 @@ import styled from 'styled-components';
 const PlaylistContainer = styled.div`
   flex: 1;
   max-width: 25%;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem; /* Add padding for better spacing */
+
+  input {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem; /* Add padding to input */
+    border: 1px solid #ccc; /* Add border for better visibility */
+    border-radius: 4px; /* Add border radius */
+    font-size: 1rem; /* Adjust font size */
+  }
 `;
 
 const PlaylistHeader = styled.h2`
@@ -16,6 +29,9 @@ const PlaylistItem = styled.li`
   align-items: center;
   cursor: pointer;
   margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  transition: background-color 0.3s;
+  border-radius: 4px; /* Add border radius */
 
   img {
     width: 50px;
@@ -27,11 +43,24 @@ const PlaylistItem = styled.li`
   span {
     font-size: 1rem;
   }
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
 `;
 
 const Playlist = ({ videos, onVideoClick, onVideoReorder }) => {
   const [playlist, setPlaylist] = useState(videos);
+  const [searchQuery, setSearchQuery] = useState('');
 
+  const filteredPlaylist = playlist.filter(video =>
+    video.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const handleItemClick = (index) => {
+
+    const originalIndex = playlist.findIndex((video) => video === filteredPlaylist[index]);
+    onVideoClick(originalIndex);
+  };
   const handleSortEnd = (oldIndex, newIndex) => {
     const newPlaylist = [...playlist];
     const [removed] = newPlaylist.splice(oldIndex, 1);
@@ -44,7 +73,7 @@ const Playlist = ({ videos, onVideoClick, onVideoReorder }) => {
     e.dataTransfer.setData('text/plain', index.toString());
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = e => {
     e.preventDefault();
   };
 
@@ -54,18 +83,28 @@ const Playlist = ({ videos, onVideoClick, onVideoReorder }) => {
     handleSortEnd(oldIndex, newIndex);
   };
 
+  const handleSearchChange = event => {
+    setSearchQuery(event.target.value);
+  };
+
   return (
     <PlaylistContainer>
       <PlaylistHeader>Playlist</PlaylistHeader>
+      <input
+        type="text"
+        placeholder="Search..."
+        value={searchQuery}
+        onChange={handleSearchChange}
+      />
       <ul>
-        {playlist.map((video, index) => (
+        {filteredPlaylist.map((video, index) => (
           <PlaylistItem
             key={index}
-            onClick={() => onVideoClick(index)}
+            onClick={() => handleItemClick(index)}
             draggable
-            onDragStart={(e) => handleDragStart(e, index)}
+            onDragStart={e => handleDragStart(e, index)}
             onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, index)}
+            onDrop={e => handleDrop(e, index)}
           >
             <img src={video.thumb} alt={video.title} />
             <span>{video.title}</span>

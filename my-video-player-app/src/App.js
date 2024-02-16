@@ -14,8 +14,23 @@ const AppContainer = styled.div`
 
   @media (min-width: 768px) {
     flex-direction: row;
+    align-items: flex-start; /* Adjust alignment for row layout */
   }
 `;
+const VideoHeader = styled.h2`
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+`;
+const AppContent = styled.div`
+  flex: 1; /* Ensure the content takes up available space */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+
+
 
 function App() {
   const [playlist, setPlaylist] = useState(mediaJSON.categories[0].videos);
@@ -30,7 +45,10 @@ function App() {
   };
   return (
     <AppContainer>
-      <VideoPlayer video={playlist[currentVideoIndex]}/>
+       <AppContent>
+       <VideoHeader>Video Player</VideoHeader>
+      <VideoPlayer video={playlist[currentVideoIndex]} autoplay={true}/>
+      </AppContent>
       <Playlist
         videos={playlist}
         onVideoClick={handleVideoClick}
